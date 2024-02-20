@@ -6,21 +6,29 @@ class Crud:
     connection = None
 
     def __init__(self, host, user, password, database, port=3306):
-        """Constructor para la clase Crud
+        """Inicializa el objeto Crud
 
         Args:
-            host (str): host de la base de datos
-            user (str): usuario de la base de datos
-            password (str): contraseña de la base de datos
-            database (str): database a la que se conectará
-            port (int, optional): Puerto de conexión a la base de datos.Por defecto es 3306.
+            host (str): Dirección del host
+            user (str): Usuario de la base de datos
+            password (str): Contraseña del usuario
+            database (str): Nombre de la base de datos
+            port (int, optional): Puerto de la base de datos. Por defecto es 3306.
         """
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
+        self.port = port
+
+    def init_connection(self):
+        """Inicia la conexión a la base de datos"""
         try:
             self.connection = connect(
-                host=host, user=user, password=password, database=database, port=port)
-            return "Conexión exitosa a la base de datos.", None
+                host=self.host, user=self.user, password=self.password, database=self.database, port=self.port)
+            return True, None
         except Error as e:
-            return None, f"Se produjo un error al conectar a la base de datos: {e}"
+            return False, f"Se produjo un error al conectar a la base de datos: {e}"
 
     def close_connection(self):
         """Cierra la conexión a la base de datos"""
@@ -33,22 +41,20 @@ class Crud:
             idComponente (int, optional): id del componente a consultar. Por defecto es None.
 
         Returns:
-            str: Es una cadena con los datos de los componentes
+            tuple: Lista de componentes
             None | str: En caso de error
         """
         try:
             cursor = self.connection.cursor()
             result = ""
             if idComponente is not None:
-                sql += "SELECT * FROM componentes WHERE idComponente=%s"
+                sql = "SELECT * FROM componentes WHERE idComponente=%s"
                 cursor.execute(sql, (idComponente,))
             else:
                 sql = "SELECT * FROM componentes"
                 cursor.execute(sql)
 
-            for (idComponente, tipo, nombre, descripcion) in cursor.fetchall():
-                result = + f"{idComponente}\t{tipo}\t{nombre}\t{descripcion}"
-
+            result = cursor.fetchall()
             cursor.close()
             return result, None
         except Exception as e:
@@ -72,7 +78,7 @@ class Crud:
             values = (tipo, nombre, descripcion)
             cursor.execute(sql, values)
             self.connection.commit()
-            return cursor.rowcount, None
+            return cursor.lastrowid, None
         except Exception as e:
             self.connection.rollback()
             return None, f"Se produjo un error al insertar el componente: {e}"
@@ -85,7 +91,7 @@ class Crud:
             idRegistro (int, optional): id del registro a consultar. Por defecto es None.
 
         Returns:
-            str: Es una cadena con los datos de los registros
+            tuple: Lista de registros
             None | str: En caso de error
         """
         try:
@@ -99,9 +105,7 @@ class Crud:
                 sql = "SELECT * FROM registros"
                 cursor.execute(sql)
 
-            for (idRegistro, idComponente, valor, fecha, hora) in cursor.fetchall():
-                result = + \
-                    f"{idRegistro}\t{idComponente}\t{valor}\t{fecha}\t{hora}"
+            result = cursor.fetchall()
 
             cursor.close()
             return result, None
@@ -127,7 +131,7 @@ class Crud:
             values = (idComponente, valor, fecha, hora)
             cursor.execute(sql, values)
             self.connection.commit()
-            return cursor.rowcount, None
+            return cursor.lastrowid, None
         except Exception as e:
             self.connection.rollback()
             return None, f"Se produjo un error al insertar el registro: {e}"
