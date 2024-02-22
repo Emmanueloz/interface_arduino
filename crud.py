@@ -60,6 +60,26 @@ class Crud:
         except Exception as e:
             return None, f"Se produjo un error al seleccionar los datos:  {e}"
 
+    def select_componentes_tipo(self, tipo):
+        """Consulta los componentes de la base de datos por tipo
+
+        Args:
+            tipo (str): Tipo de componente
+
+        Returns:
+            tuple: Lista de componentes
+            None | str: En caso de error
+        """
+        try:
+            cursor = self.connection.cursor()
+            sql = "SELECT * FROM componentes WHERE tipo=%s"
+            cursor.execute(sql, (tipo,))
+            result = cursor.fetchall()
+            cursor.close()
+            return result[0], None
+        except Exception as e:
+            return None, f"Se produjo un error al seleccionar los datos:  {e}"
+
     def insert_componente(self, tipo, nombre, descripcion):
         """Inserta un componente en la base de datos
 
