@@ -28,6 +28,9 @@ class Controlador:
             print("No se pudo conectar con Arduino:", e)
             self.vista.barraEstado.set("No se pudo conectar con Arduino")
 
+    def buscar_id_componente(self):
+        pass
+
     def encenderLed(self):
         if not self.led_encendido:
             self.arduino.write(b'e')
@@ -37,6 +40,7 @@ class Controlador:
             if valor == 1:
                 self.vista.estadoLed.set("LED ENCENDIDO")
                 self.vista.barraEstado.set("")
+                idComponente = self.buscar_id_componente()
                 self.crud.insert_registro_led(idComponente = 1, accion="Encendido")
                 self.led_encendido = True
         else:
