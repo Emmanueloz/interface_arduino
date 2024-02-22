@@ -4,8 +4,12 @@ from crud import Crud
 
 class Controlador:
     def __init__(self, vista):
+        host = 'localhost'
+        user = 'root'
+        password = ''
+        database = 'arduino_bd'
         self.vista = vista
-        self.crud = Crud("tu_host", "tu_usuario", "tu_contraseña", "tu_base_de_datos")
+        self.crud = Crud(host, user, password, database)
         self.crud.init_connection()
         self.led_encendido = False
         try:
