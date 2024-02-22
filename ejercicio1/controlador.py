@@ -5,7 +5,7 @@ from crud import Crud
 class Controlador:
     def __init__(self, vista):
         self.vista = vista
-        self.crud = Crud("tu_host", "tu_usuario", "tu_contraseña", "tu_base_de_datos")  # Configura los parámetros de tu base de datos
+        self.crud = Crud("tu_host", "tu_usuario", "tu_contraseña", "tu_base_de_datos")
         self.crud.init_connection()
         self.led_encendido = False
         try:
@@ -39,13 +39,18 @@ class Controlador:
             print("El led esta encendido nose guardo ningun registro")
 
     def apagarLed(self):
-        self.arduino.write(b'a')
-        time.sleep(0.5)
-        valor = int(self.arduino.readline().decode('utf-8'))
-        print(valor)
-        if valor == 0:
-            self.vista.estadoLed.set("LED APAGADO")
-            self.vista.barraEstado.set("")
+        if self.led_encendido:
+            self.arduino.write(b'a')
+            time.sleep(0.5)
+            valor = int(self.arduino.readline().decode('utf-8'))
+            print(valor)
+            if valor == 0:
+                self.vista.estadoLed.set("LED APAGADO")
+                self.vista.barraEstado.set("")
+                self.crud.insert_registro_led(idComponente=1, accion="Apagado")
+                self.led_encendido = False
+        else:
+            print("El led esta apagado nose guardo ningun registro")
 
             
     
