@@ -1,7 +1,9 @@
-from .controlador import control_servo1, control_servo2
 from tkinter import Tk, Frame, Button, Label, Entry, StringVar, IntVar, Scale, messagebox
+from .controlador import ServoController
 import serial
 import time
+
+controller = ServoController()
 
 miVentana = Tk()
 miVentana.title("Gustavo Alexander Medina Cifuentes")
@@ -34,10 +36,19 @@ Scale(frame1, variable=servo2, from_=0, to=180, orient="vertical", tickinterval=
                                                                                                    rowspan=4, padx=5,
                                                                                                    pady=5)
 
-Button(frame1, width=8, text="Enviar", command=lambda: control_servo1(arduino, servo1, estadoServo1, barraEstado)).grid(
+def validate_and_execute(control_function, arduino, servo, estadoServo, barraEstado):
+    grados_servo, error_message = controller.validate_servo_value(servo.get())
+
+    if grados_servo is None:
+        messagebox.showerror("Error", error_message)
+        return
+
+    control_function(arduino, grados_servo, estadoServo, barraEstado)
+
+Button(frame1, width=8, text="Enviar", command=lambda: validate_and_execute(controller.control_servo1, arduino, servo1, estadoServo1, barraEstado)).grid(
     row=4, column=0, sticky="w", padx=10, pady=5)
 
-Button(frame1, width=8, text="Enviar", command=lambda: control_servo2(arduino, servo2, estadoServo2, barraEstado)).grid(
+Button(frame1, width=8, text="Enviar", command=lambda: validate_and_execute(controller.control_servo2, arduino, servo2, estadoServo2, barraEstado)).grid(
     row=4, column=1, sticky="e", padx=5, pady=5)
 
 Label(frame1, textvariable=barraEstado, width=20, bd=2, fg="red").grid(row=5, column=0, columnspan=3, padx=5, pady=10,
