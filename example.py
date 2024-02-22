@@ -32,3 +32,9 @@ print(registros)
 componentes, error = crud.select_componentes()
 print(error)
 print(componentes)
+
+
+# Select componentes by type
+componentes, error = crud.select_componentes_tipo('servo')
+print(error)
+print(componentes)
