@@ -1,9 +1,13 @@
 import serial
 import time
+from crud import Crud
 
 class Controlador:
     def __init__(self, vista):
         self.vista = vista
+        self.crud = Crud("tu_host", "tu_usuario", "tu_contraseña", "tu_base_de_datos")  # Configura los parámetros de tu base de datos
+        self.crud.init_connection()
+        self.led_encendido = False
         try:
             self.arduino = serial.Serial('COM2', 9600, timeout=1)
             time.sleep(2)
@@ -21,13 +25,18 @@ class Controlador:
             self.vista.barraEstado.set("No se pudo conectar con Arduino")
 
     def encenderLed(self):
-        self.arduino.write(b'e')
-        time.sleep(0.5)
-        valor = int(self.arduino.readline().decode('utf-8'))
-        print(valor)
-        if valor == 1:
-            self.vista.estadoLed.set("LED ENCENDIDO")
-            self.vista.barraEstado.set("")
+        if not self.led_encendido:
+            self.arduino.write(b'e')
+            time.sleep(0.5)
+            valor = int(self.arduino.readline().decode('utf-8'))
+            print(valor)
+            if valor == 1:
+                self.vista.estadoLed.set("LED ENCENDIDO")
+                self.vista.barraEstado.set("")
+                self.crud.insert_registro_led(idComponente = 1, accion="Encendido")
+                self.led_encendido = True
+        else:
+            print("El led esta encendido nose guardo ningun registro")
 
     def apagarLed(self):
         self.arduino.write(b'a')
@@ -37,3 +46,8 @@ class Controlador:
         if valor == 0:
             self.vista.estadoLed.set("LED APAGADO")
             self.vista.barraEstado.set("")
+
+            
+    
+    def __del__(self):
+        self.crud.close_connection()

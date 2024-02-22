@@ -135,3 +135,28 @@ class Crud:
         except Exception as e:
             self.connection.rollback()
             return None, f"Se produjo un error al insertar el registro: {e}"
+
+#LED
+    def insert_registro_led(self, idComponente, accion):
+        """Inserta un registro relacionado con el encendido del LED en la base de datos
+
+        Args:
+            idComponente (int): id del componente (LED)
+            accion (str): Acción realizada (Encendido o Apagado)
+
+        Returns:
+            int: fila afectada
+            None | str: En caso de error
+        """
+        try:
+            fecha = datetime.now().date()
+            hora = datetime.now().strftime("%H:%M:%S")
+            cursor = self.connection.cursor()
+            sql = "INSERT INTO registros (idComponente, accion, fecha, hora) VALUES (%s, %s, %s, %s)"
+            values = (idComponente, accion, fecha, hora)
+            cursor.execute(sql, values)
+            self.connection.commit()
+            return cursor.lastrowid, None
+        except Exception as e:
+            self.connection.rollback()
+            return None, f"Se produjo un error al insertar el registro del LED: {e}"

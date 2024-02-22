@@ -1,5 +1,5 @@
 from tkinter import Tk, Frame, Button, Label, StringVar
-from ejercicio1.robertoControlador import Controlador
+from ejercicio1.controlador import Controlador
 
 class Vista:
     def __init__(self):
