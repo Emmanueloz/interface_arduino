@@ -35,6 +35,7 @@ print(componentes)
 
 
 # Select componentes by type
-componentes, error = crud.select_componentes_tipo('servo')
+componentes, error = crud.select_componentes_tipo_nombre(
+    'actuador', 'servomotor')
 print(error)
 print(componentes)

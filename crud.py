@@ -60,7 +60,7 @@ class Crud:
         except Exception as e:
             return None, f"Se produjo un error al seleccionar los datos:  {e}"
 
-    def select_componentes_tipo(self, tipo):
+    def select_componentes_tipo_nombre(self, tipo, nombre):
         """Consulta los componentes de la base de datos por tipo
 
         Args:
@@ -72,8 +72,8 @@ class Crud:
         """
         try:
             cursor = self.connection.cursor()
-            sql = "SELECT * FROM componentes WHERE tipo=%s"
-            cursor.execute(sql, (tipo,))
+            sql = "SELECT * FROM componentes WHERE tipo=%s AND nombre = %s"
+            cursor.execute(sql, (tipo, nombre))
             result = cursor.fetchall()
             cursor.close()
             return result[0], None
