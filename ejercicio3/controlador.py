@@ -29,18 +29,13 @@ class Controlador:
 
         if not success:
             print(f"Error initializing database connection: {error_message}")
-            
-            
     def verificar_y_insertar_componente(self, nombre_servo, tipo_servo):
         existing_component, error_message = self.crud.select_componentes_tipo_nombre(tipo_servo, nombre_servo)
-
         if existing_component is None:
             print(f"Error al verificar el componente existente: {error_message}")
             return None
-
         if not existing_component:
             _, error_message = self.crud.insert_componente(tipo_servo, nombre_servo, f"Descripción de {nombre_servo}")
-
             if error_message:
                 print(f"Error al insertar el componente: {error_message}")
                 return None
@@ -49,14 +44,11 @@ class Controlador:
         if grados.isdigit():
             grados = int(grados)
             if 0 <= grados <= 180:
-                # Check if a component with the name "servo" already exists
                 existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='servo', nombre='servo')
-
                 if existing_servo:
-                    # If a servo component already exists, do not insert a new one
-                    id_componente = existing_servo[0]  # Assuming the first result contains the ID
+                    id_componente = existing_servo[0]  
                 else:
-                    # If a servo component does not exist, insert a new one
+                    #si el  hay registro a la base de datos 
                     tipo = 'actuador'
                     nombre = 'servo'
                     descripcion = 'se inserto una instruccion de servo'
@@ -91,22 +83,16 @@ class Controlador:
         if grados.isdigit():
             grados = int(grados)
             if 0 <= grados <= 180:
-                # Check if a component with the name "servo" already exists
                 existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='servo', nombre='servo')
-
                 if existing_servo:
-                    # If a servo component already exists, do not insert a new one
-                    id_componente = existing_servo[0]  # Assuming the first result contains the ID
+                    id_componente = existing_servo[0] 
                 else:
-                    # If a servo component does not exist, insert a new one
                     tipo = 'actuador'
                     nombre = 'servo'
                     descripcion = 'se inserto una instruccion de servo'
                     id_componente, error = self.crud.insert_componente(tipo, nombre, descripcion)
-                    
                     if error:
                         return f"Error inserting component: {error}"
-
                 # Verificar si la nueva posición es diferente de la actual
                 if grados != self.posicion_actual_servo2:
                     self.arduino.write(f"2:{grados}".encode('ascii'))

@@ -12,8 +12,7 @@ def enviar_servo1():
         estado_servo1.set(estado)
         # Actualizar la posición actual del servo1 en la interfaz gráfica
         controlador.posicion_actual_servo1 = int(grados)
-        
-        
+           
 def enviar_servo2():
     grados = str(servo2.get())  # Convertir a cadena
     estado = controlador.control_servo2(grados)
@@ -21,21 +20,15 @@ def enviar_servo2():
     if estado == "NO SE HA CAMBIADO LA POSICIÓN DEL SERVO2":
         messagebox.showinfo("Información", estado)
     else:
-        # Puedes manejar otros mensajes o actualizaciones según sea necesario
-        # En este ejemplo, simplemente actualizamos la variable de estado
         estado_servo2.set(estado)
-        
-        
+    
         
 miVentana = Tk()
 miVentana.title("Gustavo Alexander Medina Cifuentes")
 miVentana.resizable(0, 0)
 miVentana.geometry("290x290")
 
-# Create an instance of the Controlador class
 controlador = Controlador()
-
-# Initialize StringVar() variables with default values
 estado_servo1 = StringVar(value=controlador.estado_servo1)
 estado_servo2 = StringVar(value=controlador.estado_servo2)
 barra_estado = StringVar()
