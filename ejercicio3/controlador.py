@@ -75,9 +75,6 @@ class Controlador:
                 return "EL VALOR DEL SERVO DEBE ESTAR EN 0 A 180"
         else:
             return "EL VALOR DEBE SER NUMERICO"
-        
-        
-        
 
     def control_servo2(self, grados):
         if grados.isdigit():
