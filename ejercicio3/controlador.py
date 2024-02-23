@@ -44,7 +44,7 @@ class Controlador:
         if grados.isdigit():
             grados = int(grados)
             if 0 <= grados <= 180:
-                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='servo', nombre='servo')
+                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo')
                 if existing_servo:
                     id_componente = existing_servo[0]  
                 else:
@@ -80,7 +80,7 @@ class Controlador:
         if grados.isdigit():
             grados = int(grados)
             if 0 <= grados <= 180:
-                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='servo', nombre='servo')
+                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo')
                 if existing_servo:
                     id_componente = existing_servo[0] 
                 else:
