@@ -32,13 +32,13 @@ class Controlador:
         try:
             resultado,error = self.crud.select_componentes_tipo_nombre('actuador','led')
             if resultado is None:
-                id_actuador_led = resultado[0]
-                return id_actuador_led
-            else:
                 id_componente, error = self.crud.insert_componente(
                     tipo = "actuador", nombre="led", descripcion="se registro"
-                ) 
+                )
                 return id_componente
+            
+            id_componente = resultado[0]
+            return id_componente
         except:
             print("error")
             
@@ -53,7 +53,7 @@ class Controlador:
                 self.vista.estadoLed.set("LED ENCENDIDO")
                 self.vista.barraEstado.set("")
                 idComponente = self.buscar_id_componente()
-                self.crud.insert_registro_led(idComponente = idComponente, accion="Encendido")
+                self.crud.insert_registro(idComponente = idComponente, valor=valor)
                 self.led_encendido = True
         else:
             print("El led esta encendido nose guardo ningun registro")
@@ -68,7 +68,7 @@ class Controlador:
                 self.vista.estadoLed.set("LED APAGADO")
                 self.vista.barraEstado.set("")
                 idComponente = self.buscar_id_componente()
-                self.crud.insert_registro_led(idComponente=idComponente, accion="Apagado")
+                self.crud.insert_registro(idComponente=idComponente, valor=valor)
                 self.led_encendido = False
         else:
             print("El led esta apagado nose guardo ningun registro")
