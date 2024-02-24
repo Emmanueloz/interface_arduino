@@ -6,7 +6,7 @@ class Vista:
         self.miVentana = ventana
         self.miVentana.title("Aplicaciones IoT")
         self.miVentana.resizable(0, 0)
-        self.miVentana.geometry("260x170")  # Aumentar el ancho para dar espacio al texto
+        self.miVentana.geometry("260x170")
 
         self.controlador = Controlador()
 
@@ -31,7 +31,7 @@ class Vista:
                     offvalue=0, command=self.control_led3).grid(row=3, column=0, padx=10, pady=10)
 
         Label(self.frame1, textvariable=self.estadoLed1, width=20, borderwidth=2, relief="groove", fg="green",
-              font=("Courier new", 10, "bold"), anchor='w').grid(row=1, column=1, padx=5, pady=5, sticky="w")  # Alineación a la izquierda
+              font=("Courier new", 10, "bold"), anchor='w').grid(row=1, column=1, padx=5, pady=5, sticky="w") 
         Label(self.frame1, textvariable=self.estadoLed2, width=20, borderwidth=2, relief="groove", fg="orange",
               font=("Courier new", 10, "bold"), anchor='w').grid(row=2, column=1, padx=5, pady=5, sticky="w")
         Label(self.frame1, textvariable=self.estadoLed3, width=20, borderwidth=2, relief="groove", fg="red",
