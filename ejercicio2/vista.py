@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Tk, Frame, Label, Checkbutton, StringVar, IntVar
 from .controlador import Controlador
 
 class Vista:
@@ -8,7 +8,11 @@ class Vista:
         self.miVentana.resizable(0, 0)
         self.miVentana.geometry("260x170")
 
-        self.controlador = Controlador()
+        try:
+            self.controlador = Controlador()
+        except Exception as e:
+            print("Error al conectar con el controlador:", str(e))
+            self.controlador = None
 
         self.estadoLed1 = StringVar()
         self.estadoLed2 = StringVar()
@@ -43,52 +47,33 @@ class Vista:
         self.inicializar_leds()
 
     def control_led1(self):
-        try:
-            if self.led1.get() == 1:
-                if self.controlador.encender_led(1) == 1:
-                    self.estadoLed1.set("Led 1 Encendido")
-            elif self.led1.get() == 0:
-                if self.controlador.apagar_led(1) == 0:
-                    self.estadoLed1.set("Led 1 Apagado")
-        except Exception as e:
-            self.barraEstado.set("Error: " + str(e))
+        self.control_led(1, self.led1, self.estadoLed1)
 
     def control_led2(self):
-        try:
-            if self.led2.get() == 1:
-                if self.controlador.encender_led(2) == 1:
-                    self.estadoLed2.set("Led 2 Encendido")
-            elif self.led2.get() == 0:
-                if self.controlador.apagar_led(2) == 0:
-                    self.estadoLed2.set("Led 2 Apagado")
-        except Exception as e:
-            self.barraEstado.set("Error: " + str(e))
+        self.control_led(2, self.led2, self.estadoLed2)
 
     def control_led3(self):
+        self.control_led(3, self.led3, self.estadoLed3)
+
+    def control_led(self, nLed, led_var, estado_var):
         try:
-            if self.led3.get() == 1:
-                if self.controlador.encender_led(3) == 1:
-                    self.estadoLed3.set("Led 3 Encendido")
-            elif self.led3.get() == 0:
-                if self.controlador.apagar_led(3) == 0:
-                    self.estadoLed3.set("Led 3 Apagado")
+            if self.controlador:
+                if led_var.get() == 1:
+                    if self.controlador.encender_led(nLed) == 1:
+                        estado_var.set(f"Led {nLed} Encendido")
+                elif led_var.get() == 0:
+                    if self.controlador.apagar_led(nLed) == 0:
+                        estado_var.set(f"Led {nLed} Apagado")
         except Exception as e:
             self.barraEstado.set("Error: " + str(e))
 
     def inicializar_leds(self):
         try:
-            datos = self.controlador.arduino.readline().decode('utf-8')
-            if datos:
-                estados = eval(datos)
-                self.estadoLed1.set("Led 1 Encendido" if estados[0] == 1 else "Led 1 Apagado")
-                self.estadoLed2.set("Led 2 Encendido" if estados[1] == 1 else "Led 2 Apagado")
-                self.estadoLed3.set("Led 3 Encendido" if estados[2] == 1 else "Led 3 Apagado")
-                self.led1.set(estados[0])
-                self.led2.set(estados[1])
-                self.led3.set(estados[2])
+            if self.controlador:
+                # Eliminamos esta parte ya que no es necesaria
+                pass
         except Exception as e:
             self.barraEstado.set("Error al conectar con Arduino: " + str(e))
-
 
 miVentana = Tk()
 vista = Vista(miVentana)
