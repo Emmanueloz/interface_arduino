@@ -13,7 +13,7 @@ class Controlador:
 
         host = 'localhost'
         user = 'root'
-        password = '123456'
+        password = ''
         database = 'arduino_bd'
 
         self.crud = Crud(host, user, password, database)
