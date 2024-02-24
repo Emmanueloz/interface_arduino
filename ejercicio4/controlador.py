@@ -1,48 +1,54 @@
-import serial
-import time
-import threading
+from crud import Crud
 
 class Controlador:
-    def __init__(self, puerto_serial='COM2'):
-        self.arduino = serial.Serial(puerto_serial, 9600, timeout=1)
-        time.sleep(2)
-        print(self.arduino)
+    def __init__(self):
+        # Detalles de conexión a la base de datos
+        host = 'localhost'
+        user = 'root'
+        password = ''
+        database = 'arduino_bd'
 
-    def enviar_comando(self, comando):
-        try:
-            self.arduino.write(comando.encode())
-            time.sleep(0.1)
-            datos = self.arduino.readline().decode('utf-8')
-            print(datos)
-            return datos.strip() if datos else None
-        except serial.SerialException as e:
-            print(f"Error al enviar el comando: {e}")
-            return None
+        # Inicializar el objeto Crud con los detalles de la conexión
+        self.crud = Crud(host, user, password, database)
 
-    def cerrar_conexion(self):
-        self.arduino.close()
-
-if __name__ == "__main__":
-    controlador = Controlador()
-
-    while True:
-        print("1: Leer datos de sensores")
-        print("2: Otro comando")
-        print("3: Salir")
-
-        opcion = input("Ingrese una opción: ")
-
-        if opcion == '1':
-            datos = controlador.enviar_comando("1:0")
-            if datos:
-                print(f"Datos recibidos: {datos}")
-            else:
-                print("No se recibieron datos.")
-        elif opcion == '2':
-            # Implementa aquí el manejo de otro comando
-            pass
-        elif opcion == '3':
-            controlador.cerrar_conexion()
-            break
+        # Intentar establecer la conexión al iniciar el controlador
+        result, error = self.crud.init_connection()
+        if error:
+            print(f"Error al conectar a la base de datos: {error}")
         else:
-            print("Opción no válida. Por favor, ingrese una opción válida.")
+            print("Conexión establecida correctamente.")
+
+    def obtener_componentes(self):
+        """Obtiene todos los componentes de la base de datos."""
+        componentes, error = self.crud.select_componentes()
+        if error:
+            return None, error
+        return componentes, None
+
+    def agregar_componente(self, tipo, nombre, descripcion):
+        """Agrega un nuevo componente a la base de datos."""
+        fila_afectada, error = self.crud.insert_componente(tipo, nombre, descripcion)
+        if error:
+            return None, error
+        return fila_afectada, None
+
+    def obtener_registros(self, id_componente=None):
+        """Obtiene los registros de la base de datos."""
+        registros, error = self.crud.select_registros(id_componente)
+        if error:
+            return None, error
+        return registros, None
+
+    def agregar_registro(self, id_componente, valor):
+        """Agrega un nuevo registro a la base de datos."""
+        fila_afectada, error = self.crud.insert_registro(id_componente, valor)
+        if error:
+            return None, error
+        return fila_afectada, None
+
+    def agregar_sensor_por_tipo(self, tipo_sensor, nombre_sensor, descripcion_sensor):
+        """Agrega un nuevo sensor a la base de datos según el tipo especificado."""
+        fila_afectada, error = self.crud.insert_sensor(tipo_sensor, nombre_sensor, descripcion_sensor)
+        if error:
+            return None, error
+        return fila_afectada, None
