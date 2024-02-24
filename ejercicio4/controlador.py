@@ -43,10 +43,15 @@ class Controlador:
                     self.vista.estadoLumin.set(valor)
                     self.vista.lstbox_lumin.insert("end", valor)
                     self.vista.lstbox_lumin.see("end")
-                    # 
-                    idComponente = 2  # 
+                    # Insertar registro en la base de datos
+                    idComponente = 2  # Suponiendo que el componente de luminosidad tiene ID 2
                     self.crud.insert_registro(idComponente, float(valor))
 
     def __del__(self):
         self.estaCorriendo = False
         self.crud.close_connection()
+
+
+
+
+
