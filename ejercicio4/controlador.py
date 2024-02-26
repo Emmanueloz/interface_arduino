@@ -1,54 +1,75 @@
+import serial
+import time
 from crud import Crud
 
 class Controlador:
-    def __init__(self):
-        # Detalles de conexión a la base de datos
-        host = 'localhost'
-        user = 'root'
-        password = ''
-        database = 'arduino_bd'
+    def __init__(self, estadoTemp, estadoLumin, lstbox_temp, lstbox_lumin):
+        self.estadoTemp = estadoTemp
+        self.estadoLumin = estadoLumin
+        self.lstbox_temp = lstbox_temp
+        self.lstbox_lumin = lstbox_lumin
 
-        # Inicializar el objeto Crud con los detalles de la conexión
-        self.crud = Crud(host, user, password, database)
-
-        # Intentar establecer la conexión al iniciar el controlador
-        result, error = self.crud.init_connection()
-        if error:
+        # Inicializar la conexión a la base de datos
+        self.crud = Crud(host='localhost', user='root', password='', database='arduino_bd')
+        success, error = self.crud.init_connection()
+        if not success:
             print(f"Error al conectar a la base de datos: {error}")
-        else:
-            print("Conexión establecida correctamente.")
+            
 
-    def obtener_componentes(self):
-        """Obtiene todos los componentes de la base de datos."""
-        componentes, error = self.crud.select_componentes()
-        if error:
-            return None, error
-        return componentes, None
+        # Inicializar la conexión al puerto serie Arduino
+        self.arduino = serial.Serial('COM2', 9600, timeout=1)
+        time.sleep(2)  # Esperar a que se estabilice la conexión
+        print("Conexión con Arduino establecida")
+        
+    def verificar_y_insertar(self,nombre_sensor, tipo_sensor):
+        existing_component, error_message = self.crud.select_componentes_tipo_nombre(tipo_sensor, nombre_sensor)
+        if existing_component is None:
+            print(f"Error al vereficar el componente existente: {error_message}")
+            return None
+        if not existing_component:
+            _, error_message = self.crud.insert_componente(tipo_sensor, nombre_sensor, f"Descripcion de {nombre_sensor}")
+            if error_message:
+                print(f"Error al insertar el componente: {error_message}")
+                return None
+            
+    def leerSensores(self):
+        estaCorriendo = True
+        while estaCorriendo:
+            existing_sensor, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='sensor')
+            if existing_sensor:
+                id_componente = existing_sensor[0]
+            else:
+                tipo= 'actuador'
+                nombre = 'sensor'
+                descripcion = 'se inserto movimientos'
+                id_componente, error, = self.crud.insert_componente(tipo, nombre, descripcion)
+                
+                if error:
+                    return f"Error inserting sensor {error}"            
+            datos = self.arduino.readline().decode('utf-8').strip()
+            if datos:
+                posicion = datos.index(":")
+                sensor = datos[:posicion]
+                valor = datos[posicion+1:]
+                if sensor == '3':
+                    self.estadoTemp.set(valor)
+                    self.lstbox_temp.insert("end", valor)
+                    self.lstbox_temp.see("end")
+                    id_registro, error = self.crud.insert_registro(idComponente=id_componente, valor=float(valor)) 
+                    if error:
+                        print(f"Error al insertar registro de temperatura en la base de datos: {error}")
+                    
+                elif sensor == '2':
+                    self.estadoLumin.set(valor)
+                    self.lstbox_lumin.insert("end", valor)
+                    self.lstbox_lumin.see("end")
+                
+                    id_registro, error = self.crud.insert_registro(idComponente=id_componente, valor=float(valor))  
+                    if error:
+                        print(f"Error al insertar registro de luminosidad en la base de datos: {error}")
+                        
 
-    def agregar_componente(self, tipo, nombre, descripcion):
-        """Agrega un nuevo componente a la base de datos."""
-        fila_afectada, error = self.crud.insert_componente(tipo, nombre, descripcion)
-        if error:
-            return None, error
-        return fila_afectada, None
-
-    def obtener_registros(self, id_componente=None):
-        """Obtiene los registros de la base de datos."""
-        registros, error = self.crud.select_registros(id_componente)
-        if error:
-            return None, error
-        return registros, None
-
-    def agregar_registro(self, id_componente, valor):
-        """Agrega un nuevo registro a la base de datos."""
-        fila_afectada, error = self.crud.insert_registro(id_componente, valor)
-        if error:
-            return None, error
-        return fila_afectada, None
-
-    def agregar_sensor_por_tipo(self, tipo_sensor, nombre_sensor, descripcion_sensor):
-        """Agrega un nuevo sensor a la base de datos según el tipo especificado."""
-        fila_afectada, error = self.crud.insert_sensor(tipo_sensor, nombre_sensor, descripcion_sensor)
-        if error:
-            return None, error
-        return fila_afectada, None
+    def finalizar(self):
+        # Cerrar la conexión a la base de datos y al puerto serie Arduino
+        self.crud.close_connection()
+        self.arduino.close()
