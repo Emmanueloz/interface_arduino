@@ -1,6 +1,6 @@
-import serial
 import time
 from crud import Crud
+from arduno import ArduinoSerial
 
 class Controlador:
     def __init__(self, vista):
@@ -13,12 +13,16 @@ class Controlador:
         self.crud.init_connection()
         self.led_encendido = False
         try:
-            self.arduino = serial.Serial('COM2', 9600, timeout=1)
+            ##self.arduino = arduno.Serial('COM2', 9600, timeout=1)
+            self.arduino = ArduinoSerial('COM2', 9600, 1)
+            self.arduino.conectar()
             time.sleep(2)
-            print(self.arduino)
-            self.arduino.write(b'E')
+            print(self.arduino.arduino)
+            #self.arduino.write(b'E')
+            self.arduino.enviar_dato('E')
             time.sleep(0.1)
-            valor = int(self.arduino.readline().decode('utf-8'))
+            #valor = int(self.arduino.readline().decode('utf-8'))
+            valor = int(self.arduino.recibir_dato())
             print(valor)
             if valor == 0:
                 self.vista.estadoLed.set("LED APAGADO")
@@ -45,9 +49,11 @@ class Controlador:
 
     def encenderLed(self):
         if not self.led_encendido:
-            self.arduino.write(b'e')
+            ##self.arduino.write(b'e')
+            self.arduino.enviar_dato('e')
             time.sleep(0.5)
-            valor = int(self.arduino.readline().decode('utf-8'))
+            #valor = int(self.arduino.readline().decode('utf-8'))
+            valor = int(self.arduino.recibir_dato())
             print(valor)
             if valor == 1:
                 self.vista.estadoLed.set("LED ENCENDIDO")
@@ -60,9 +66,11 @@ class Controlador:
 
     def apagarLed(self):
         if self.led_encendido:
-            self.arduino.write(b'a')
+            #self.arduino.write(b'a')
+            self.arduino.enviar_dato('a')
             time.sleep(0.5)
-            valor = int(self.arduino.readline().decode('utf-8'))
+            #valor = int(self.arduino.readline().decode('utf-8'))
+            valor = int(self.arduino.recibir_dato())
             print(valor)
             if valor == 0:
                 self.vista.estadoLed.set("LED APAGADO")
