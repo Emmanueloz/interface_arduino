@@ -7,43 +7,58 @@ class Controlador:
         try:
             self.arduino = serial.Serial(port, baudrate, timeout=timeout)
             time.sleep(2)
+            print(f"Conexión establecida con Arduino en el puerto {port}")
         except serial.SerialException as e:
             print(f"Error al conectar con el puerto {port}: {e}")
             self.arduino = None
 
-        host = 'localhost'
-        user = 'root'
-        password = ''
-        database = 'arduino_bd'
+        self.crud = Crud('localhost', 'root', '123456', 'arduino_bd', port=3308)
 
-        self.crud = Crud(host, user, password, database)
+        result, error = self.crud.init_connection()
+        if result:
+            print("Conexión establecida con la base de datos")
+        else:
+            print(f"Error al conectar con la base de datos: {error}")
+            return
 
-        self.id_componente_leds = self.obtener_id_componente_leds()
-
-    def obtener_id_componente_leds(self):
-        return 1
+        # Insertar un único componente para los tres LEDs
+        try:
+            id_componente, error = self.crud.insert_componente(
+                "actuador", "led", "Descripción del LED")
+            if id_componente:
+                print(f"Componente LED insertado con ID: {id_componente}")
+                # Asignar el mismo idComponente para los tres LEDs
+                self.id_componente_led = id_componente
+            else:
+                print(f"Error al insertar componente LED: {error}")
+        except Exception as e:
+            print(f"Error al insertar componente: {e}")
 
     def _enviar_comando(self, nLed, estado):
         if self.arduino is None:
-            print("No se pudo enviar el comando. Arduino no está conectado.")
+            print("No se puede enviar el comando. Arduino no está conectado.")
             return None
 
-        comando = f"{nLed}:{estado}"
+        comando = f"{nLed}:{estado}"  # No es necesario especificar un componente
         try:
-            self.arduino.write(comando.encode())
-            time.sleep(0.1)
-            respuesta = self.arduino.readline().decode("utf-8").strip()
-            valor = int(respuesta)
-            
-            if valor is not None:
-                fecha = time.strftime('%Y-%m-%d')
-                hora = time.strftime('%H:%M:%S')
-                self.crud.insert_registro(self.id_componente_leds, valor, fecha, hora)
-            
-            return valor
+            if self.arduino.is_open:
+                print(f"Enviando comando a Arduino: {comando}")
+                self.arduino.write(comando.encode())
+                time.sleep(0.1)
+                respuesta = self.arduino.readline().decode("utf-8").strip()
+                valor = int(respuesta)
+                if valor is not None:
+                    self.crud.insert_registro(self.id_componente_led, valor)
+                print(f"Respuesta de Arduino: {valor}")
+                return valor
+            else:
+                print("El puerto serial está cerrado.")
+                return None
         except (ValueError, serial.SerialException) as e:
-            print(f"Error: {e}")
+            print(f"Error al enviar el comando: {e}")
             return None
+
+
 
     def encender_led(self, nLed):
         try:
