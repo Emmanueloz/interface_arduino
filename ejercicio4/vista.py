@@ -3,7 +3,7 @@ import threading
 from .controlador import Controlador
 
 miVentana = Tk()
-miVentana.title("Aplicaciones Iot")
+miVentana.title("Félix Alexis Sánchez López")
 miVentana.resizable(0,0)
 miVentana.geometry("320x230")
 
