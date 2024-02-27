@@ -24,11 +24,14 @@ class Controlador:
             self.barra_estado = "ERROR al conectar con Arduino"
         self.posicion_actual_servo1 = int(self.estado_servo1)
         self.posicion_actual_servo2 = int(self.estado_servo2)
-        self.crud = Crud(host='localhost', user='root', password='', database='arduino_bd')
+        self.crud = Crud(host='localhost', user='root', password='tavo', database='arduino_bd')
         success, error_message = self.crud.init_connection()
 
         if not success:
             print(f"Error initializing database connection: {error_message}")
+            
+            
+            
     def verificar_y_insertar_componente(self, nombre_servo, tipo_servo):
         existing_component, error_message = self.crud.select_componentes_tipo_nombre(tipo_servo, nombre_servo)
         if existing_component is None:
@@ -44,14 +47,14 @@ class Controlador:
         if grados.isdigit():
             grados = int(grados)
             if 0 <= grados <= 180:
-                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo')
+                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo1')
                 if existing_servo:
                     id_componente = existing_servo[0]  
                 else:
                     #si el  hay registro a la base de datos 
                     tipo = 'actuador'
-                    nombre = 'servo'
-                    descripcion = 'se inserto una instruccion de servo'
+                    nombre = 'servo1'
+                    descripcion = 'se inserto una instruccion de servo del 1'
                     id_componente, error = self.crud.insert_componente(tipo, nombre, descripcion)
                     
                     if error:
@@ -80,13 +83,13 @@ class Controlador:
         if grados.isdigit():
             grados = int(grados)
             if 0 <= grados <= 180:
-                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo')
+                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo2')
                 if existing_servo:
                     id_componente = existing_servo[0] 
                 else:
                     tipo = 'actuador'
-                    nombre = 'servo'
-                    descripcion = 'se inserto una instruccion de servo'
+                    nombre = 'servo2'
+                    descripcion = 'se inserto una instruccion de servo del servo 2'
                     id_componente, error = self.crud.insert_componente(tipo, nombre, descripcion)
                     if error:
                         return f"Error inserting component: {error}"
