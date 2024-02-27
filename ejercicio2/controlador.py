@@ -12,70 +12,85 @@ class Controlador:
             print(f"Error al conectar con el puerto {port}: {e}")
             self.arduino = None
 
-        self.crud = Crud('localhost', 'root', '123456', 'arduino_bd', port=3308)
+        self.crud = Crud('localhost', 'root', '123456', 'arduino_bd', '3308')
 
-        result, error = self.crud.init_connection()
-        if result:
-            print("Conexión establecida con la base de datos")
-        else:
-            print(f"Error al conectar con la base de datos: {error}")
+        if self.arduino is None:
+            print("No se puede continuar. Arduino no está conectado.")
             return
 
-        # Insertar un único componente para los tres LEDs
-        try:
-            id_componente, error = self.crud.insert_componente(
-                "actuador", "led", "Descripción del LED")
-            if id_componente:
-                print(f"Componente LED insertado con ID: {id_componente}")
-                # Asignar el mismo idComponente para los tres LEDs
-                self.id_componente_led = id_componente
+        if not self.crud.init_connection()[0]:
+            print("No se puede continuar. Error al conectar con la base de datos.")
+            return
+
+        self.id_componente_leds = self.obtener_o_crear_ids_componentes_leds()
+
+    def __del__(self):
+        if self.arduino:
+            self.arduino.close()
+            print("Puerto serial cerrado.")
+
+    def obtener_o_crear_ids_componentes_leds(self):
+        ids_leds = []
+        for i in range(1, 4):
+            nombre_led = f"led_{i}_raul"
+            componente, error = self.crud.select_componentes_tipo_nombre("actuador", nombre_led)
+            if componente:
+                ids_leds.append(componente[0])
             else:
-                print(f"Error al insertar componente LED: {error}")
-        except Exception as e:
-            print(f"Error al insertar componente: {e}")
+                id_componente, error = self.crud.insert_componente(
+                    "actuador", nombre_led, f"Descripción del LED {i}")
+                if id_componente:
+                    print(f"Componente LED insertado con ID: {id_componente}")
+                    ids_leds.append((id_componente,))
+                else:
+                    print(f"Error al insertar componente LED {i}: {error}")
+        return ids_leds
 
     def _enviar_comando(self, nLed, estado):
-        if self.arduino is None:
-            print("No se puede enviar el comando. Arduino no está conectado.")
-            return None
-
-        comando = f"{nLed}:{estado}"  # No es necesario especificar un componente
         try:
-            if self.arduino.is_open:
-                print(f"Enviando comando a Arduino: {comando}")
-                self.arduino.write(comando.encode())
-                time.sleep(0.1)
-                respuesta = self.arduino.readline().decode("utf-8").strip()
-                valor = int(respuesta)
-                if valor is not None:
-                    self.crud.insert_registro(self.id_componente_led, valor)
-                print(f"Respuesta de Arduino: {valor}")
-                return valor
-            else:
+            if not self.arduino.is_open:
                 print("El puerto serial está cerrado.")
                 return None
+
+            if not 0 < nLed <= len(self.id_componente_leds):
+                print(f"Número de LED fuera de rango. Solo se permiten LEDs del 1 al {len(self.id_componente_leds)}.")
+                return None
+
+            id_componente = self.id_componente_leds[nLed - 1]
+            comando = f"{nLed}:{estado}"
+            self.arduino.write(comando.encode())
+            time.sleep(0.1)
+            respuesta = self.arduino.readline().decode("utf-8").strip()
+            valor = int(respuesta)
+
+            id_registro, error = self.crud.insert_registro(id_componente, valor)
+            if id_registro:
+                print("Registro insertado en la base de datos.")
+            else:
+                print(f"Error al insertar registro en la base de datos: {error}")
+
+            print(f"Respuesta de Arduino: {valor}")
+            return valor
         except (ValueError, serial.SerialException) as e:
             print(f"Error al enviar el comando: {e}")
             return None
 
-
-
     def encender_led(self, nLed):
         try:
             nLed = int(nLed)
-            if nLed < 0:
-                raise ValueError("Número de LED no puede ser negativo.")
+            if nLed <= 0:
+                raise ValueError("Número de LED debe ser un entero positivo.")
+            return self._enviar_comando(nLed, 1)
         except ValueError as e:
             print(f"Error: {e}")
             return None
-        return self._enviar_comando(nLed, 1)
 
     def apagar_led(self, nLed):
         try:
             nLed = int(nLed)
-            if nLed < 0:
-                raise ValueError("Número de LED no puede ser negativo.")
+            if nLed <= 0:
+                raise ValueError("Número de LED debe ser un entero positivo.")
+            return self._enviar_comando(nLed, 0)
         except ValueError as e:
             print(f"Error: {e}")
             return None
-        return self._enviar_comando(nLed, 0)
