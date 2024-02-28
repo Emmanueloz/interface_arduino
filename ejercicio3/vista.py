@@ -22,38 +22,37 @@ def enviar_servo2():
         estado_servo2.set(estado)
 
 def abrir_ventana_con_imagen():
+    registros_servo1, registros_servo2, error = controlador.mostrar_registros_servos()
+
+    if error:
+        messagebox.showerror("Error", error)
+        return
+
     ventana_imagen = Toplevel(miVentana)
-    ventana_imagen.title("Registro del servo")
+    ventana_imagen.title("Registros de Servos")
 
     # Treeview para mostrar los registros de los servos
     tree = ttk.Treeview(ventana_imagen)
-    tree["columns"] = ("Servo", "Valor", "Fecha")
+    tree["columns"] = ("Servo", "Valor", "Fecha", "Hora")
 
     tree.column("#0", width=0, stretch="no")
-    tree.column("Servo", anchor="center", width=80)
+    tree.column("Fecha", anchor="center", width=80)
+    tree.column("Hora", anchor="center", width=80)
     tree.column("Valor", anchor="center", width=80)
-    tree.column("Fecha", anchor="center", width=120)
 
     tree.heading("#0", text="", anchor="w")
     tree.heading("Servo", text="Servo")
     tree.heading("Valor", text="Valor")
     tree.heading("Fecha", text="Fecha")
+    tree.heading("Hora", text="Hora")
 
-    # Obtener registros de ambos servos utilizando la nueva función
-    registros_servo1, registros_servo2, error = controlador.mostrar_registros_servos()
+    for registro in registros_servo1:
+        tree.insert("", "end", values=("Servo1", registro[0], registro[1], registro[2]))
 
-    if error:
-        messagebox.showerror("Error", f"Error al obtener registros: {error}")
-    else:
-        for registro in registros_servo1:
-            tree.insert("", 0, values=("Servo1", registro["valor"], registro["fecha"]))
-
-        for registro in registros_servo2:
-            tree.insert("", 0, values=("Servo2", registro["valor"], registro["fecha"]))
+    for registro in registros_servo2:
+        tree.insert("", "end", values=("Servo2", registro[0], registro[1], registro[2]))
 
     tree.pack()
-
-    
     
     
 # Crear la ventana principal

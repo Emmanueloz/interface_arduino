@@ -30,6 +30,18 @@ class Controlador:
         if not success:
             print(f"Error initializing database connection: {error_message}")
             
+    def mostrar_registros_servos(self):
+        registros_servo1, error_servo1 = self.crud.select_registros(tipo='actuador', nombre='servo1')
+        registros_servo2, error_servo2 = self.crud.select_registros(tipo='actuador', nombre='servo2')
+
+        if error_servo1 or error_servo2:
+            return None, f"Error al obtener los registros: {error_servo1 or error_servo2}"
+
+        return registros_servo1, registros_servo2, None
+
+
+
+
             
     def verificar_y_insertar_componente(self, nombre_servo, tipo_servo):
         existing_component, error_message = self.crud.select_componentes_tipo_nombre(tipo_servo, nombre_servo)
