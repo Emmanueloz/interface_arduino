@@ -14,14 +14,7 @@ try:
     icono = tkinter.PhotoImage(file="ejercicio4/imagenes/icon-32.png")
     miVentana.iconphoto(True, icono)
 except tkinter.TclError as e:
-    print("No se pudo cargar el icono:", e)
-    
-# Carga el icono para la barra de tareas desde un archivo ICO
-try:
-    icono_ico = "icono.ico"  # Reemplaza con la ruta de tu archivo .ico
-    miVentana.iconbitmap(True,icono_ico)
-except tkinter.TclError as e:
-    print("No se pudo cargar el icono para la barra de tareas:", e)
+    print("No se pudo cargar el icono:", e)    
 
 estadoTemp = StringVar()
 estadoLumin = StringVar()
@@ -38,7 +31,9 @@ notebook.pack(fill='both', expand=True)
 
 frame1 = Frame(notebook)
 frame2 = Frame(notebook)
+frame3 = Frame(notebook)
 
+notebook.add(frame3, text='Registros')
 notebook.add(frame1, text='Temperatura')  # Agrega una pestaña para la temperatura
 notebook.add(frame2, text='Luminosidad')  # Agrega una pestaña para la luminosidad
 
