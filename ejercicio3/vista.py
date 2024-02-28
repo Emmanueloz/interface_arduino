@@ -31,7 +31,6 @@ def abrir_ventana_con_imagen():
     ventana_imagen = Toplevel(miVentana)
     ventana_imagen.title("Registros de Servos")
 
-    # Treeview para mostrar los registros de los servos
     tree = ttk.Treeview(ventana_imagen)
     tree["columns"] = ("Servo", "Valor", "Fecha", "Hora")
 
@@ -54,14 +53,12 @@ def abrir_ventana_con_imagen():
 
     tree.pack()
     
-    
-# Crear la ventana principal
+ 
 miVentana = Tk()
 miVentana.title("Gustavo Alexander Medina Cifuentes")
 miVentana.resizable(0, 0)
 miVentana.geometry("350x350")
 
-# Resto del código permanece igual
 
 controlador = Controlador()
 estado_servo1 = StringVar(value=controlador.estado_servo1)

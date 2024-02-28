@@ -106,7 +106,7 @@ class Crud:
     def select_registros(self, tipo, nombre):
         try:
             cursor = self.connection.cursor()
-            sql = "SELECT valor, fecha FROM registros WHERE idComponente = (SELECT idComponente FROM componentes WHERE tipo = %s AND nombre = %s)"
+            sql = "SELECT valor, fecha, hora FROM registros WHERE idComponente = (SELECT idComponente FROM componentes WHERE tipo = %s AND nombre = %s)"
             cursor.execute(sql, (tipo, nombre))
             result = cursor.fetchall()
             cursor.close()

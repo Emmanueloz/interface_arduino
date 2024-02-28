@@ -62,7 +62,6 @@ class Controlador:
                 if existing_servo:
                     id_componente = existing_servo[0]  
                 else:
-                    #si el  hay registro a la base de datos 
                     tipo = 'actuador'
                     nombre = 'servo1'
                     descripcion = 'se inserto una instruccion de servo'
@@ -71,16 +70,13 @@ class Controlador:
                     if error:
                         return f"Error inserting component: {error}"
 
-                # Verificar si la nueva posición es diferente de la actual
+
                 if grados != self.posicion_actual_servo1:
                     self.arduino.write(f"1:{grados}".encode('ascii'))
                     time.sleep(0.1)
                     estado_s1 = self.arduino.readline().decode('utf-8')
-
-                    # Insertar el registro en la base de datos
                     self.crud.insert_registro(id_componente, grados)
 
-                    # Actualizar la posición actual del servo1
                     self.posicion_actual_servo1 = grados
                     return estado_s1.strip()
                 else:
@@ -104,16 +100,15 @@ class Controlador:
                     id_componente, error = self.crud.insert_componente(tipo, nombre, descripcion)
                     if error:
                         return f"Error inserting component: {error}"
-                # Verificar si la nueva posición es diferente de la actual
+
                 if grados != self.posicion_actual_servo2:
                     self.arduino.write(f"2:{grados}".encode('ascii'))
                     time.sleep(0.1)
                     estado_s2 = self.arduino.readline().decode('utf-8')
 
-                    # Insertar el registro en la base de datos
+  
                     self.crud.insert_registro(id_componente, grados)
 
-                    # Actualizar la posición actual del servo2
                     self.posicion_actual_servo2 = grados
                     return estado_s2.strip()
                 else:
