@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Button, Label, StringVar
+from tkinter import Tk, Frame, Button, Label, StringVar, Scrollbar
 from ejercicio1.controlador import Controlador
 from tkinter import ttk 
 import tkinter
@@ -19,7 +19,7 @@ class Vista:
         self.frame1 = Frame(self.miVentana)
         self.frame1.pack(fill='both', expand=True)
 
-        #PESTAÑAS
+        #Pestañas agregadas
 
         self.notebook = ttk.Notebook(self.miVentana)
         self.notebook.pack(fill='both', expand=True)
@@ -27,7 +27,7 @@ class Vista:
         self.frame1 = Frame(self.notebook)
         self.frame2 = Frame(self.notebook)
 
-        self.notebook.add(self.frame1, text='Inicio')  # Agrega una pestaña para la temperatura
+        self.notebook.add(self.frame1, text='Inicio') 
         self.notebook.add(self.frame2, text='Registros') 
         
 
@@ -62,18 +62,22 @@ class Vista:
 
 
 
-    #COLUMNAS
-        tree = ttk.Treeview(self.frame2)
+        #Scrollbar
+        scroll_dato = Scrollbar(self.frame2, orient = "vertical")
+        scroll_dato.grid(row= 1, column = 4, sticky='ns')        
+        #Columnas para que los registros se muestren
+        tree = ttk.Treeview(self.frame2 , height=5, yscrollcommand=scroll_dato.set)
+        scroll_dato.configure(command=tree.yview)
         tree.grid(row=1, column=0, columnspan=4, padx=5, sticky="we")
-        tree["columns"] = ("actuador", "Valor", "Fecha", "Hora")
+        tree["columns"] = ("Actuador", "Valor", "Fecha", "Hora")
         tree.column("#0", width=0, stretch="no")
-        tree.column("actuador", anchor="center", width="90")
+        tree.column("Actuador", anchor="center", width="90")
         tree.column("Fecha", anchor="center", width="80")
         tree.column("Hora", anchor="center", width="85")
         tree.column("Valor", anchor="center", width="60")
 
         tree.heading("#0", text="", anchor="w")
-        tree.heading("actuador", text="actuador")
+        tree.heading("Actuador", text="Actuador")
         tree.heading("Valor", text="Valor")
         tree.heading("Fecha", text="Fecha")
         tree.heading("Hora", text="Hora")
