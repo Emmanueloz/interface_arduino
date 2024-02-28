@@ -24,11 +24,25 @@ class Controlador:
             self.barra_estado = "ERROR al conectar con Arduino"
         self.posicion_actual_servo1 = int(self.estado_servo1)
         self.posicion_actual_servo2 = int(self.estado_servo2)
-        self.crud = Crud(host='localhost', user='root', password='', database='arduino_bd')
+        self.crud = Crud(host='localhost', user='root', password='tavo', database='arduino_bd')
         success, error_message = self.crud.init_connection()
 
         if not success:
             print(f"Error initializing database connection: {error_message}")
+            
+    def mostrar_registros_servos(self):
+        registros_servo1, error_servo1 = self.crud.select_registros(tipo='actuador', nombre='servo1')
+        registros_servo2, error_servo2 = self.crud.select_registros(tipo='actuador', nombre='servo2')
+
+        if error_servo1 or error_servo2:
+            return None, f"Error al obtener los registros: {error_servo1 or error_servo2}"
+
+        return registros_servo1, registros_servo2, None
+
+
+
+
+            
     def verificar_y_insertar_componente(self, nombre_servo, tipo_servo):
         existing_component, error_message = self.crud.select_componentes_tipo_nombre(tipo_servo, nombre_servo)
         if existing_component is None:
@@ -44,29 +58,25 @@ class Controlador:
         if grados.isdigit():
             grados = int(grados)
             if 0 <= grados <= 180:
-                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo')
+                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo1')
                 if existing_servo:
                     id_componente = existing_servo[0]  
                 else:
-                    #si el  hay registro a la base de datos 
                     tipo = 'actuador'
-                    nombre = 'servo'
+                    nombre = 'servo1'
                     descripcion = 'se inserto una instruccion de servo'
                     id_componente, error = self.crud.insert_componente(tipo, nombre, descripcion)
                     
                     if error:
                         return f"Error inserting component: {error}"
 
-                # Verificar si la nueva posición es diferente de la actual
+
                 if grados != self.posicion_actual_servo1:
                     self.arduino.write(f"1:{grados}".encode('ascii'))
                     time.sleep(0.1)
                     estado_s1 = self.arduino.readline().decode('utf-8')
-
-                    # Insertar el registro en la base de datos
                     self.crud.insert_registro(id_componente, grados)
 
-                    # Actualizar la posición actual del servo1
                     self.posicion_actual_servo1 = grados
                     return estado_s1.strip()
                 else:
@@ -80,26 +90,25 @@ class Controlador:
         if grados.isdigit():
             grados = int(grados)
             if 0 <= grados <= 180:
-                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo')
+                existing_servo, error = self.crud.select_componentes_tipo_nombre(tipo='actuador', nombre='servo2')
                 if existing_servo:
                     id_componente = existing_servo[0] 
                 else:
                     tipo = 'actuador'
-                    nombre = 'servo'
+                    nombre = 'servo2'
                     descripcion = 'se inserto una instruccion de servo'
                     id_componente, error = self.crud.insert_componente(tipo, nombre, descripcion)
                     if error:
                         return f"Error inserting component: {error}"
-                # Verificar si la nueva posición es diferente de la actual
+
                 if grados != self.posicion_actual_servo2:
                     self.arduino.write(f"2:{grados}".encode('ascii'))
                     time.sleep(0.1)
                     estado_s2 = self.arduino.readline().decode('utf-8')
 
-                    # Insertar el registro en la base de datos
+  
                     self.crud.insert_registro(id_componente, grados)
 
-                    # Actualizar la posición actual del servo2
                     self.posicion_actual_servo2 = grados
                     return estado_s2.strip()
                 else:
