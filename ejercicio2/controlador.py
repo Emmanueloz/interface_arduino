@@ -34,6 +34,16 @@ class Controlador:
         except Exception as e:
             print(f"Error al insertar componente: {e}")
 
+    def consultar_arduino(self):
+        self.arduino.write('4:0'.encode())
+        time.sleep(0.1)
+        datos = self.arduino.readline().decode('utf-8')
+        print(datos)
+        if datos:
+            return eval(datos)
+        return None 
+
+
     def _enviar_comando(self, nLed, estado):
         if self.arduino is None:
             print("No se puede enviar el comando. Arduino no está conectado.")
