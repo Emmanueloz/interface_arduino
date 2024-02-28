@@ -103,12 +103,12 @@ class Crud:
             self.connection.rollback()
             return None, f"Se produjo un error al insertar el componente: {e}"
 
-    # Crud Operations for Registros table
-    def select_registros(self, idRegistro=None):
+    
+    def select_registros(self, idComponente=None):
         """Consulta los registros de la base de datos
 
         Args:
-            idRegistro (int, optional): id del registro a consultar. Por defecto es None.
+            idComponente (int, optional): id del idComponente para filtrar los registros. Por defecto es None.
 
         Returns:
             tuple: Lista de registros
@@ -118,9 +118,9 @@ class Crud:
             cursor = self.connection.cursor()
             result = ""
 
-            if idRegistro is not None:
-                sql = "SELECT * FROM registros WHERE idRegistro=%s"
-                cursor.execute(sql, (idRegistro,))
+            if idComponente is not None:
+                sql = "SELECT * FROM registros WHERE idComponente=%s"
+                cursor.execute(sql, (idComponente,))
             else:
                 sql = "SELECT * FROM registros"
                 cursor.execute(sql)
