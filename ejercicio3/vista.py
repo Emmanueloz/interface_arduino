@@ -30,17 +30,29 @@ def abrir_ventana_con_imagen():
     tree["columns"] = ("Servo", "Valor", "Fecha")
 
     tree.column("#0", width=0, stretch="no")
-    tree.column("Fecha", anchor="center", width=120)
+    tree.column("Servo", anchor="center", width=80)
     tree.column("Valor", anchor="center", width=80)
+    tree.column("Fecha", anchor="center", width=120)
 
     tree.heading("#0", text="", anchor="w")
     tree.heading("Servo", text="Servo")
     tree.heading("Valor", text="Valor")
     tree.heading("Fecha", text="Fecha")
-    
 
+    # Obtener registros de ambos servos utilizando la nueva función
+    registros_servo1, registros_servo2, error = controlador.mostrar_registros_servos()
+
+    if error:
+        messagebox.showerror("Error", f"Error al obtener registros: {error}")
+    else:
+        for registro in registros_servo1:
+            tree.insert("", 0, values=("Servo1", registro["valor"], registro["fecha"]))
+
+        for registro in registros_servo2:
+            tree.insert("", 0, values=("Servo2", registro["valor"], registro["fecha"]))
 
     tree.pack()
+
     
     
     
