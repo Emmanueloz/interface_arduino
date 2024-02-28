@@ -23,22 +23,27 @@ def enviar_servo2():
 
 def abrir_ventana_con_imagen():
     ventana_imagen = Toplevel(miVentana)
-    ventana_imagen.title("Ventana con Imagen")
+    ventana_imagen.title("Registro del servo")
 
-    # Treeview con un "Hola Mundo"
+    # Treeview para mostrar los registros de los servos
     tree = ttk.Treeview(ventana_imagen)
-    tree["columns"] = ("Mensaje",)
+    tree["columns"] = ("Servo", "Valor", "Fecha")
 
     tree.column("#0", width=0, stretch="no")
-    tree.column("Mensaje", anchor="center", width=200)
+    tree.column("Fecha", anchor="center", width=120)
+    tree.column("Valor", anchor="center", width=80)
 
     tree.heading("#0", text="", anchor="w")
-    tree.heading("Mensaje", text="Mensaje")
+    tree.heading("Servo", text="Servo")
+    tree.heading("Valor", text="Valor")
+    tree.heading("Fecha", text="Fecha")
+    
 
-    tree.insert("", 0, values=("¡Hola Mundo!",))
 
     tree.pack()
-
+    
+    
+    
 # Crear la ventana principal
 miVentana = Tk()
 miVentana.title("Gustavo Alexander Medina Cifuentes")
@@ -61,19 +66,14 @@ frame1.pack(fill='both', expand=True)
 imagen_path = 'ejercicio3/notebook.png'
 imagen = PhotoImage(file=imagen_path)
 
-# Escalar la imagen a un tamaño específico (ajusta los números según tus necesidades)
 imagen = imagen.subsample(15, 15)
 
-# Botón con imagen escalada que abre la ventana al hacer clic
 boton_imagen = Button(frame1, image=imagen, command=abrir_ventana_con_imagen)
 boton_imagen.photo = imagen
 boton_imagen.grid(row=0, column=2, sticky="e",  padx=5, pady=5)
 
 
-# Etiqueta "..:: control de 2 Servomotores ::.." y Botón con imagen en la misma fila y columna
 Label(frame1, text="..:: control de 2 Servomotores ::..").grid(row=0, column=0, columnspan=2, padx=5, sticky="we")
-
-# Ruta real de tu imagen
 
 Label(frame1, text="Servo 1").grid(row=1, column=0, padx=10, pady=5, sticky="we")
 Label(frame1, text="Servo 2").grid(row=1, column=1, padx=5, pady=5, sticky="we")

@@ -31,7 +31,6 @@ class Controlador:
             print(f"Error initializing database connection: {error_message}")
             
             
-            
     def verificar_y_insertar_componente(self, nombre_servo, tipo_servo):
         existing_component, error_message = self.crud.select_componentes_tipo_nombre(tipo_servo, nombre_servo)
         if existing_component is None:
@@ -54,7 +53,7 @@ class Controlador:
                     #si el  hay registro a la base de datos 
                     tipo = 'actuador'
                     nombre = 'servo1'
-                    descripcion = 'se inserto una instruccion de servo del 1'
+                    descripcion = 'se inserto una instruccion de servo'
                     id_componente, error = self.crud.insert_componente(tipo, nombre, descripcion)
                     
                     if error:
@@ -89,7 +88,7 @@ class Controlador:
                 else:
                     tipo = 'actuador'
                     nombre = 'servo2'
-                    descripcion = 'se inserto una instruccion de servo del servo 2'
+                    descripcion = 'se inserto una instruccion de servo'
                     id_componente, error = self.crud.insert_componente(tipo, nombre, descripcion)
                     if error:
                         return f"Error inserting component: {error}"
