@@ -34,6 +34,7 @@ estado_servo2 = StringVar(value=controlador.estado_servo2)
 barra_estado = StringVar()
 servo1 = StringVar()
 servo2 = IntVar()
+servo2.set(int(estado_servo2.get()))
 
 frame1 = Frame(miVentana)
 frame1.pack(fill='both', expand=True)
@@ -45,7 +46,7 @@ Label(frame1, text="Servo 2").grid(row=1, column=1, padx=5, pady=5, sticky="we")
 
 Label(frame1, textvariable=estado_servo1, width=6, borderwidth=2, relief="groove", fg="green", bg="black", font=("Courier New", 15, "bold")).grid(row=2, column=0, padx=5, pady=5, sticky="wesn")
 
-Label(frame1, textvariable=estado_servo2, width=6, borderwidth=2, relief="groove", fg="green", bg="black", font=("Courier New", 15, "bold")).grid(row=2, column=1, padx=5, pady=5, sticky="wesn")
+Label(frame1, textvariable=estado_servo2, width=6, borderwidth=2, relief="groove", fg="red", bg="black", font=("Courier New", 15, "bold")).grid(row=2, column=1, padx=5, pady=5, sticky="wesn")
 
 Entry(frame1, textvariable=servo1, width=6, justify="center").grid(row=3, column=0, padx=10, pady=5, sticky="wesn")
 
