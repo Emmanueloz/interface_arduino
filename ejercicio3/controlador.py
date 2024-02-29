@@ -40,8 +40,6 @@ class Controlador:
         return registros_servo1, registros_servo2, None
 
 
-
-
             
     def verificar_y_insertar_componente(self, nombre_servo, tipo_servo):
         existing_component, error_message = self.crud.select_componentes_tipo_nombre(tipo_servo, nombre_servo)

@@ -41,7 +41,18 @@ class Controlador:
                 self.estadoLumin.set(estados[1])
             print("Conexión establecida con Arduino ")  # Muestra un mensaje indicando que la conexión se ha establecido correctamente
         except serial.SerialException as e:
-            print(f"Error al conectar con Arduino: {e}")         
+            print(f"Error al conectar con Arduino: {e}")
+            
+    def mostrar_registros_sensores(self):
+            registros_temperatura, error_temperatura = self.crud.select_registros(tipo='actuador', nombre='temperatura')
+            registros_luminosidad, error_luminosidad = self.crud.select_registros(tipo='actuador', nombre='luminosidad')
+
+            if error_temperatura or error_luminosidad:
+                return None, f"Error al obtener los registros: {error_temperatura or error_luminosidad}"
+
+            return registros_temperatura, registros_luminosidad, None    
+        
+        
     def verificar_y_insertar(self,nombre_sensor, tipo_sensor):
         """
         Verifica la existencia de un componente en la base de datos y lo inserta si no existe.
