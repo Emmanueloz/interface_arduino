@@ -65,7 +65,7 @@ class Vista:
         self.actualizar_registros()
 
         scroll_dato = Scrollbar(self.frame2, orient="vertical")
-        self.tree = ttk.Treeview(self.frame2, yscrollcommand=scroll_dato.set)
+        self.tree = ttk.Treeview(self.frame2,height=5, yscrollcommand=scroll_dato.set)
         scroll_dato.grid(row=1, column=4, sticky='ns')
         scroll_dato.configure(command=self.tree.yview)
         self.tree.grid(row=1, column=0, columnspan=4, padx=5, sticky="we")
