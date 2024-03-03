@@ -98,6 +98,8 @@ Button(frame1, width=8, text="Enviar", command=enviar_servo2).grid(row=4, column
 Label(frame1, textvariable=barra_estado, width=20, bd=2, fg="red").grid(row=5, column=0, columnspan=3, padx=5, pady=10, sticky="we")
 
 
+
+
 scroll_dato = Scrollbar(frame2, orient="vertical")
 
 tree = ttk.Treeview(frame2, yscrollcommand=scroll_dato.set)
