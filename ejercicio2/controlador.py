@@ -12,7 +12,7 @@ class Controlador:
             print(f"Error al conectar con el puerto {port}: {e}")
             self.arduino = None
 
-        self.crud = Crud('localhost', 'root', '123456', 'arduino_bd', port=3308)
+        self.crud = Crud('localhost', 'root', '123456', 'arduino_bd', '3308')
 
         result, error = self.crud.init_connection()
         if result:
@@ -24,7 +24,7 @@ class Controlador:
         # Insertar un componente para cada LED si no existen
         self.id_componentes_led = {}  # Inicializar el diccionario
         for num_led in range(1, 4):
-            nombre_led = f"led_{num_led}"
+            nombre_led = f"led_{num_led}_Raul"
             id_componente, error = self.crud.select_componentes_tipo_nombre("actuador", nombre_led)
             if error:
                 print(f"Error al consultar componente {nombre_led}: {error}")
@@ -49,7 +49,7 @@ class Controlador:
         if not self.id_componentes_led:
             try:
                 for num_led in range(1, 4):
-                    nombre_led = f"led_{num_led}"
+                    nombre_led = f"led_{num_led}_Raul"
                     descripcion_led = f"Descripción del LED {num_led}"
                     id_componente_insertado, error_insertar = self.crud.insert_componente("actuador", nombre_led, descripcion_led)
                     if id_componente_insertado:
@@ -61,9 +61,9 @@ class Controlador:
                 print(f"Error al insertar componentes: {e}")
 
     def mostrar_registros_leds(self):
-        registros_led1, error_led1 = self.crud.select_registros(tipo='actuador', nombre='led_1')
-        registros_led2, error_led2 = self.crud.select_registros(tipo='actuador', nombre='led_2')
-        registros_led3, error_led3 = self.crud.select_registros(tipo='actuador', nombre='led_3')
+        registros_led1, error_led1 = self.crud.select_registros(tipo='actuador', nombre='led_1_Raul')
+        registros_led2, error_led2 = self.crud.select_registros(tipo='actuador', nombre='led_2_Raul')
+        registros_led3, error_led3 = self.crud.select_registros(tipo='actuador', nombre='led_3_Raul')
 
         if error_led1 or error_led2 or error_led3:
             return None, f"Error al obtener los registros: {error_led1 or error_led2 or error_led3}"
@@ -102,7 +102,7 @@ class Controlador:
                 valor = int(respuesta)
                 if valor is not None:
                     print(self.id_componentes_led)
-                    result, error = self.crud.insert_registro(self.id_componentes_led[f'led_{nLed}'], valor)
+                    result, error = self.crud.insert_registro(self.id_componentes_led[f'led_{nLed}_Raul'], valor)
 
                 print(f"Respuesta de Arduino: {valor}")
                 return valor
@@ -118,7 +118,7 @@ class Controlador:
             nLed = int(nLed)
             if nLed < 0:
                 raise ValueError("Número de LED no puede ser negativo.")
-            if f"led_{nLed}" not in self.id_componentes_led:
+            if f"led_{nLed}_Raul" not in self.id_componentes_led:
                 raise ValueError("ID de componente no encontrado para el LED especificado.")
         except ValueError as e:
             print(f"Error: {e}")
@@ -131,7 +131,7 @@ class Controlador:
             nLed = int(nLed)
             if nLed < 0:
                 raise ValueError("Número de LED no puede ser negativo.")
-            if f"led_{nLed}" not in self.id_componentes_led:
+            if f"led_{nLed}_Raul" not in self.id_componentes_led:
                 raise ValueError("ID de componente no encontrado para el LED especificado.")
         except ValueError as e:
             print(f"Error: {e}")
