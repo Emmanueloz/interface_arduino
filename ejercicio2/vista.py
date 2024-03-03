@@ -1,7 +1,6 @@
 from tkinter import Button, Checkbutton, Scrollbar, Tk, Frame, Label, StringVar, IntVar, ttk
 from .controlador import Controlador
 
-
 class Vista:
     def __init__(self, ventana):
         self.miVentana = ventana
@@ -16,7 +15,6 @@ class Vista:
             print("Error al conectar con el controlador:", str(e))
             self.controlador = None
             self.datos = None
-
 
         self.estadoLed1 = StringVar()
         self.estadoLed2 = StringVar()
@@ -130,7 +128,6 @@ class Vista:
                 estado_var.set(f"Led {nLed} Encendido")
             else:
                 estado_var.set(f"Led {nLed} Apagado")
-
 
 miVentana = Tk()
 vista = Vista(miVentana)
