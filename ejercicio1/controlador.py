@@ -16,7 +16,7 @@ class Controlador:
             ##self.arduino = arduno.Serial('COM2', 9600, timeout=1)
             self.arduino = ArduinoSerial('COM2', 9600, 1)
             self.arduino.conectar()
-            time.sleep(2)
+            time.sleep(1)
             print(self.arduino.arduino)
             #self.arduino.write(b'E')
             self.arduino.enviar_dato('E')
@@ -27,6 +27,7 @@ class Controlador:
             if valor == 0:
                 self.vista.estadoLed.set("LED APAGADO")
             elif valor == 1:
+                self.led_encendido =True
                 self.vista.estadoLed.set("LED ENCENDIDO")
         except Exception as e:
             print("No se pudo conectar con Arduino:", e)
@@ -34,10 +35,10 @@ class Controlador:
 
     def buscar_id_componente(self):
         try:
-            resultado,error = self.crud.select_componentes_tipo_nombre('actuador','led')
+            resultado,error = self.crud.select_componentes_tipo_nombre('actuador','ledroberto')
             if resultado is None:
                 id_componente, error = self.crud.insert_componente(
-                    tipo = "actuador", nombre="led", descripcion="se registro"
+                    tipo = "actuador", nombre="ledroberto", descripcion="se registro"
                 )
                 return id_componente
             
@@ -45,6 +46,14 @@ class Controlador:
             return id_componente
         except:
             print("error")
+    
+    def mostrar_registros_led(self):
+        resultado_led, error = self.crud.select_registros(tipo='actuador', nombre='ledroberto')
+
+        if error:
+            return None, f"Error al obtener los registros: {error}"
+        
+        return resultado_led, None
             
 
     def encenderLed(self):
