@@ -1,5 +1,8 @@
-from tkinter import Tk, Frame, Button, Label, Entry, StringVar, IntVar, Scale, PhotoImage, messagebox, Toplevel, ttk
+from tkinter import Tk, Frame, Button, Label, Entry, StringVar, IntVar, Scale, PhotoImage, messagebox, Toplevel, ttk,Scrollbar
+from tkinter import Tk, Frame, Label, StringVar, Listbox, Scrollbar
 from .controlador import Controlador
+import threading
+import tkinter
 
 def enviar_servo1():
     grados = servo1.get()
@@ -20,45 +23,48 @@ def enviar_servo2():
         messagebox.showinfo("Información", estado)
     else:
         estado_servo2.set(estado)
-
-def abrir_ventana_con_imagen():
+        
+        
+def actualizar_registros():
+    for item in tree.get_children():
+        tree.delete(item)
     registros_servo1, registros_servo2, error = controlador.mostrar_registros_servos()
-
-    if error:
-        messagebox.showerror("Error", error)
-        return
-
-    ventana_imagen = Toplevel(miVentana)
-    ventana_imagen.title("Registros de Servos")
-
-    tree = ttk.Treeview(ventana_imagen)
-    tree["columns"] = ("Servo", "Valor", "Fecha", "Hora")
-
-    tree.column("#0", width=0, stretch="no")
-    tree.column("Fecha", anchor="center", width=80)
-    tree.column("Hora", anchor="center", width=80)
-    tree.column("Valor", anchor="center", width=80)
-
-    tree.heading("#0", text="", anchor="w")
-    tree.heading("Servo", text="Servo")
-    tree.heading("Valor", text="Valor")
-    tree.heading("Fecha", text="Fecha")
-    tree.heading("Hora", text="Hora")
 
     for registro in registros_servo1:
         tree.insert("", "end", values=("Servo1", registro[0], registro[1], registro[2]))
 
     for registro in registros_servo2:
         tree.insert("", "end", values=("Servo2", registro[0], registro[1], registro[2]))
+        
+        
 
-    tree.pack()
-    
- 
+
+
 miVentana = Tk()
 miVentana.title("Gustavo Alexander Medina Cifuentes")
 miVentana.resizable(0, 0)
-miVentana.geometry("350x350")
+miVentana.geometry("290x290")
 
+
+        
+try:
+    icono = tkinter.PhotoImage(file="ejercicio3/imagen/servo.png")    
+    miVentana.iconphoto(True, icono)
+except tkinter.TclError as e:
+    print(e)
+    print("No se puedo cargar el icono")
+    
+    
+
+
+notebook = ttk.Notebook(miVentana)
+notebook.pack(fill='both', expand=True)
+
+frame1 = Frame(notebook)
+frame2 = Frame(notebook)
+
+notebook.add(frame1, text='Inicio')  
+notebook.add(frame2, text='Regristro')  
 
 controlador = Controlador()
 estado_servo1 = StringVar(value=controlador.estado_servo1)
@@ -68,17 +74,9 @@ servo1 = StringVar()
 servo2 = IntVar()
 servo2.set(int(estado_servo2.get()))
 
-frame1 = Frame(miVentana)
-frame1.pack(fill='both', expand=True)
 
-imagen_path = 'ejercicio3/notebook.png'
-imagen = PhotoImage(file=imagen_path)
+Label(frame2, text="..:: Registos de 2 Servomotores ::..").grid(row=0, column=0, columnspan=2, padx=5, sticky="we")
 
-imagen = imagen.subsample(15, 15)
-
-boton_imagen = Button(frame1, image=imagen, command=abrir_ventana_con_imagen)
-boton_imagen.photo = imagen
-boton_imagen.grid(row=0, column=2, sticky="e",  padx=5, pady=5)
 
 
 Label(frame1, text="..:: control de 2 Servomotores ::..").grid(row=0, column=0, columnspan=2, padx=5, sticky="we")
@@ -98,5 +96,45 @@ Button(frame1, width=8, text="Enviar", command=enviar_servo1).grid(row=4, column
 Button(frame1, width=8, text="Enviar", command=enviar_servo2).grid(row=4, column=1, sticky="e", padx=5, pady=5)
 
 Label(frame1, textvariable=barra_estado, width=20, bd=2, fg="red").grid(row=5, column=0, columnspan=3, padx=5, pady=10, sticky="we")
+
+
+
+
+scroll_dato = Scrollbar(frame2, orient="vertical")
+
+tree = ttk.Treeview(frame2, height=8, yscrollcommand=scroll_dato.set)
+
+scroll_dato.grid(row=1, column=4, sticky='ns')
+scroll_dato.configure(command=tree.yview)
+
+tree.grid(row=1, column=0, columnspan=4, padx=5, sticky="we")
+
+
+tree["columns"] = ("Servo", "Valor", "Fecha", "Hora")
+tree.column("#0", width=0, stretch="no")
+tree.column("Servo", anchor="center", width=60)
+tree.column("Fecha", anchor="center", width=50)
+tree.column("Hora", anchor="center", width=80)
+tree.column("Valor", anchor="center", width=80)
+
+tree.heading("#0", text="", anchor="w")
+tree.heading("Servo", text="Servo")
+tree.heading("Valor", text="Valor")
+tree.heading("Fecha", text="Fecha")
+tree.heading("Hora", text="Hora")
+
+
+
+boton_actualizar = Button(frame2, text="Actualizar", command=actualizar_registros)
+boton_actualizar.grid(row=0, column=2, padx=5, pady=5, sticky="e")
+
+registros_servo1, registros_servo2, error = controlador.mostrar_registros_servos()
+
+for registro in registros_servo1:
+    tree.insert("", "end", values=("Servo1", registro[0], registro[1], registro[2]))
+
+for registro in registros_servo2:
+    tree.insert("", "end", values=("Servo2", registro[0], registro[1], registro[2]))
+
 
 miVentana.mainloop()
