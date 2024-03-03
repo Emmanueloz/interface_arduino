@@ -22,7 +22,7 @@ class Controlador:
 
         # Inicializa la conexión a la base de datos
         self.crud = Crud(host='localhost', user='root', password='', database='arduino_bd')
-        success, error = self.crud.init_connection()  # Intenta iniciar la conexión
+        success, error = self.crud.init_connection() 
         if not success: 
             print(f"Error al conectar a la base de datos: {error}") 
             

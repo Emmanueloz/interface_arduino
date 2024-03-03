@@ -48,7 +48,7 @@ frame3 = Frame(notebook)
 
 notebook.add(frame1, text='Temperatura')  # Agrega una pestaña para la temperatura
 notebook.add(frame2, text='Luminosidad')  # Agrega una pestaña para la luminosidad
-notebook.add(frame3, text='Registros')
+notebook.add(frame3, text='Registros')    # Agrega una pestaña para Registros
 
 # Widgets para la pestaña de Temperatura
 Label(frame1, text="Temperatura").grid(row=0, column=0, padx=10, pady=5, sticky="we")
