@@ -43,7 +43,7 @@ def actualizar_registros():
 miVentana = Tk()
 miVentana.title("Gustavo Alexander Medina Cifuentes")
 miVentana.resizable(0, 0)
-miVentana.geometry("350x350")
+miVentana.geometry("290x290")
 
 
         
@@ -63,8 +63,8 @@ notebook.pack(fill='both', expand=True)
 frame1 = Frame(notebook)
 frame2 = Frame(notebook)
 
-notebook.add(frame1, text='Inicio')  # Agrega una pestaña para la temperatura
-notebook.add(frame2, text='Regristro')  #
+notebook.add(frame1, text='Inicio')  
+notebook.add(frame2, text='Regristro')  
 
 controlador = Controlador()
 estado_servo1 = StringVar(value=controlador.estado_servo1)
@@ -102,7 +102,7 @@ Label(frame1, textvariable=barra_estado, width=20, bd=2, fg="red").grid(row=5, c
 
 scroll_dato = Scrollbar(frame2, orient="vertical")
 
-tree = ttk.Treeview(frame2, yscrollcommand=scroll_dato.set)
+tree = ttk.Treeview(frame2, height=8, yscrollcommand=scroll_dato.set)
 
 scroll_dato.grid(row=1, column=4, sticky='ns')
 scroll_dato.configure(command=tree.yview)
@@ -113,9 +113,9 @@ tree.grid(row=1, column=0, columnspan=4, padx=5, sticky="we")
 tree["columns"] = ("Servo", "Valor", "Fecha", "Hora")
 tree.column("#0", width=0, stretch="no")
 tree.column("Servo", anchor="center", width=60)
-tree.column("Fecha", anchor="center", width=80)
-tree.column("Hora", anchor="center", width=90)
-tree.column("Valor", anchor="center", width=90)
+tree.column("Fecha", anchor="center", width=50)
+tree.column("Hora", anchor="center", width=80)
+tree.column("Valor", anchor="center", width=80)
 
 tree.heading("#0", text="", anchor="w")
 tree.heading("Servo", text="Servo")
